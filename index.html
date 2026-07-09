@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthClinic</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="pantalla-login" class="login-container">
+        <div class="login-card">
+            <h1>HealthClinic</h1>
+            
+            <div id="clima-consultorio" class="widget-clima">
+                🌡️ Temp. actual: <span id="temp-valor">--</span>°C
+            </div>
+            
+            <h2>Bienvenido</h2>
+            <p class="login-instruccion">Ingrese sus credenciales médicas para ingresar al sistema:</p>
+            
+            <div class="form-group-login">
+                <label for="input-login-correo" class="form-label">Correo Electrónico:</label>
+                <input type="email" id="input-login-correo" class="input-login" placeholder="ejemplo@clinic.com" required>
+            </div>
+
+            <div class="form-group-login">
+                <label for="input-login-rut" class="form-label">RUT Médico:</label>
+                <input type="text" id="input-login-rut" class="input-login" placeholder="12345678-9" required>
+            </div>
+            
+            <button onclick="iniciarSesion()" class="btn-guardar btn-login-submit">Ingresar al Panel</button>
+        </div>
+    </div>
+
+    <div id="panel-principal" class="contenedor-dashboard" style="display: none;">
+        
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 id="saludo-medico">Cargando datos...</h1>
+            <button onclick="cerrarSesion()" class="btn-cerrar">Cerrar Sesión</button>
+        </header>
+
+        <section class="kpis">
+            <div class="tarjeta-kpi" onclick="filtrarTablaCitas('hoy')" style="cursor: pointer;">
+                <h3>Próximas citas hoy</h3>
+                <p id="kpi-citas-hoy">0</p>
+            </div>
+            <div class="tarjeta-kpi" onclick="filtrarTablaCitas('atendidos')" style="cursor: pointer;">
+                <h3>Pacientes atendidos</h3>
+                <p id="kpi-pacientes-total">0</p>
+            </div>
+            <div class="tarjeta-kpi" onclick="filtrarTablaCitas('pendientes')" style="cursor: pointer;">
+                <h3>Citas pendientes (Semana)</h3>
+                <p id="kpi-citas-semana">0</p>
+            </div>
+        </section>
+
+        <section class="tabla-citas">
+            <h2>Próximas citas de hoy</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Paciente</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-citas">
+                    </tbody>
+            </table>
+        </section>
+        
+        <hr style="margin: 40px 0; border: 1px solid var(--gris-borde);">
+
+        <section class="buscar-paciente">
+            <h2>Buscar Paciente</h2>
+            <div class="buscador-container">
+                <input type="text" id="input-busqueda" placeholder="Ingrese RUT o Nombre del paciente...">
+                <button onclick="buscarPaciente()">Buscar</button>
+            </div>
+
+            <table style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>Cédula (RUT)</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-busqueda">
+                    <tr><td colspan="4" style="text-align:center;">Use el buscador para encontrar un paciente</td></tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section id="vista-ficha-medica" class="ficha-medica" style="display: none;">
+            <div class="encabezado-ficha">
+                <h2>Ficha Clínica del Paciente</h2>
+                <button onclick="cerrarFicha()" class="btn-cerrar">Cerrar Ficha ✖</button>
+            </div>
+
+            <div class="ficha-grid">
+                <div class="tarjeta-datos">
+                    <h3>Datos Personales</h3>
+                    <p><strong>Cédula:</strong> <span id="ficha-cedula"></span></p>
+                    <p><strong>Nombre:</strong> <span id="ficha-nombre"></span></p>
+                    <p><strong>Nacimiento:</strong> <span id="ficha-nacimiento"></span></p>
+                    <p><strong>Teléfono:</strong> <span id="ficha-telefono"></span></p>
+                    <p><strong>Dirección:</strong> <span id="ficha-direccion"></span></p>
+                </div>
+
+                <div class="tarjeta-datos">
+                    <h3>Últimos Diagnósticos</h3>
+                    <ul id="ficha-diagnosticos" class="lista-simple">
+                        </ul>
+                </div>
+
+                <div class="tarjeta-datos">
+                    <h3>Medicamentos Activos</h3>
+                    <ul id="ficha-medicamentos" class="lista-simple">
+                        </ul>
+                </div>
+            </div>
+
+            <div class="tabla-citas" style="margin-top: 20px;">
+                <h3>Historial de Citas</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Médico</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ficha-historial-citas">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <hr style="margin: 40px 0; border: 1px solid var(--gris-borde);">
+
+        <section class="registro-cita">
+            <h2>Registrar Diagnóstico y Cita</h2>
+            
+            <form id="form-registro" onsubmit="guardarRegistro(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="input-paciente">Seleccionar Paciente *</label>
+                        <input type="text" id="input-paciente" list="lista-pacientes" placeholder="Escriba para buscar..." required>
+                        <datalist id="lista-pacientes">
+                            </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="input-fecha">Fecha y Hora *</label>
+                        <input type="datetime-local" id="input-fecha" required>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="input-diagnostico">Diagnóstico Clínico *</label>
+                        <textarea id="input-diagnostico" rows="3" placeholder="Descripción libre del diagnóstico..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="input-cie10">Código CIE-10 (Opcional)</label>
+                        <input type="text" id="input-cie10" placeholder="Ej: J06.9">
+                    </div>
+                </div>
+
+                <div class="prescripcion-section">
+                    <h3>Prescribir Medicamentos</h3>
+                    <div class="buscador-medicamentos">
+                        <select id="select-medicamento">
+                            <option value="">Seleccione un medicamento...</option>
+                            </select>
+                        <input type="text" id="input-indicaciones" placeholder="Cantidad y Frecuencia (Ej: 1 cap c/8 hrs por 7 días)">
+                        <button type="button" onclick="agregarMedicamento()" class="btn-secundario">Agregar a receta</button>
+                    </div>
+
+                    <table style="margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Indicaciones</th>
+                                <th style="width: 100px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-tabla-prescripcion">
+                            <tr id="fila-vacia-meds"><td colspan="3" style="text-align:center;">No hay medicamentos en la receta</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="text-align: right; margin-top: 25px;">
+                    <button type="submit" class="btn-guardar">Guardar Registro Médico</button>
+                </div>
+            </form>
+        </section>
+
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
