@@ -31,3 +31,4 @@ This project is a complete web application designed to manage medical appointmen
 ## Author:
 
 * **Yerko T. Hermosilla** - *Full-Stack Development & API Design* - [GitHub Profile](https://github.com/Khy-Lnk)
+<img width="1908" height="881" alt="flask-mongodb-medical" src="https://github.com/user-attachments/assets/d208f16a-9bc9-4299-8f33-a84a0579343a" />
